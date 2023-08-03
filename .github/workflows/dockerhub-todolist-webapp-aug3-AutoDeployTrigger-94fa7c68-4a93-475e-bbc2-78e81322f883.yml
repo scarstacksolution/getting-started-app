@@ -1,0 +1,42 @@
+name: Trigger auto deployment for dockerhub-todolist-webapp-aug3
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/dockerhub-todolist-webapp-aug3-AutoDeployTrigger-94fa7c68-4a93-475e-bbc2-78e81322f883.yml'
+
+  # Allow mannually trigger 
+  workflow_dispatch:
+      
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.DOCKERHUBTODOLISTWEBAPPAUG3_AZURE_CREDENTIALS }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          appSourcePath: ${{ github.workspace }} 
+          registryUrl: docker.io
+          registryUsername: ${{ secrets.DOCKERHUBTODOLISTWEBAPPAUG3_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.DOCKERHUBTODOLISTWEBAPPAUG3_REGISTRY_PASSWORD }}
+          containerAppName: dockerhub-todolist-webapp-aug3
+          resourceGroup: ScarstackRsGroup02
+          imageToBuild: oadeoy1/dockerhub-todolist-webapp-aug3:${{ github.sha }}
+          
+
+     
+
